@@ -1,0 +1,70 @@
+/* Header styling */
+.header {
+    width: 100%;
+    background-color: #202020; /* Dark background for header */
+    padding: 10px 20px;
+    color: #fdfcfc; /* Light text color for contrast */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .header-title {
+    margin: 0;
+    font-size: 24px;
+    color: #FFFF00;
+  }
+  
+  nav {
+    margin: 0;
+  }
+  
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: Cyan; /* Light blue color for links */
+    font-size: 16px;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  
+  .mode-toggle {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .mode-toggle:hover {
+    text-decoration: underline;
+  }
+  
+  /* Dark Mode Styling */
+  .dark-mode .header {
+    background-color: #333;
+  }
+  
+  .dark-mode .nav-link {
+    color: #f4f4f4; /* Light text color in dark mode */
+  }
+  
+  .dark-mode .mode-toggle {
+    color: #f4f4f4;
+  }
+  

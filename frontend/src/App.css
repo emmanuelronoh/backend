@@ -1,0 +1,24 @@
+/* src/App.css */
+.App {
+    text-align: center;
+  }
+  
+  .swiper-slide img {
+    width: 100%;
+    height: auto;
+  }
+  
+  /* Ensure the App container takes up full height */
+ html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  .App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full height of the viewport */
+  }
+  .main-content {
+    flex: 1; /* Take up remaining space */
+  }

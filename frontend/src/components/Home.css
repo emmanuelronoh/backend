@@ -1,0 +1,76 @@
+/* Ensure full width and height for the header section */
+.home-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    text-align: center; /* Center align text */
+    height: 100vh; /* Full viewport height */
+    padding: 0 20px; /* Padding on the sides */
+    background-color: #f0f0f0; /* Light background color for better readability */
+    padding-top: 0px;
+  }
+  
+  .home-content {
+    max-width: 800px; /* Maximum width for larger screens */
+    width: 100%; /* Full width on smaller screens */
+    padding-top: 10%; /* Padding around the content */
+    text-align: center;
+  }
+  
+  .para {
+    text-align: center;
+    padding-left: 100px;
+  }
+
+  .home-header h1 {
+    font-size: 2.5rem; /* Responsive font size */
+    margin: 0 0 20px 0; /* Margin around the heading */
+  }
+  
+  .home-header h2 {
+    font-size: 1.5rem; /* Responsive font size */
+    margin: 0 0 20px 0; /* Margin around the subheading */
+  }
+  
+  .home-header p {
+    font-size: 1rem; /* Responsive font size */
+    margin: 0 0 20px 0; /* Margin around the paragraph */
+  }
+  
+  .signup-button {
+    background-color: #4CAF50; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding inside the button */
+    font-size: 1rem; /* Responsive font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+  }
+  
+
+
+  .signup-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .home-header {
+      padding: 0 10px; /* Reduce padding on smaller screens */
+    }
+  
+    .home-header h1 {
+      font-size: 2rem; /* Smaller font size for smaller screens */
+    }
+  
+    .home-header h2 {
+      font-size: 1.25rem; /* Smaller font size for smaller screens */
+    }
+  
+    .home-header p {
+      font-size: 0.875rem; /* Smaller font size for smaller screens */
+    }
+  }
+  

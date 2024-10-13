@@ -1,0 +1,73 @@
+
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 30%;
+  }
+  
+  /* Main content container should take up available space */
+  .main-content {
+    flex: 1; /* This will make sure the content takes up available space */
+  }
+  
+  .footer {
+    background-color: deeppink; /* Adjust as needed */
+    color: #fff; /* Adjust as needed */
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  .footer .box-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+  .footer .box {
+    flex: 1;
+    padding: 1rem;
+    max-width: 300px;
+
+  }
+  
+  .footer .share a {
+    margin: 0 0.5rem;
+    color: Lime ;
+  }
+  
+  .footer .links {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: Bright Yellow  ;
+  }
+  
+  .footer .email {
+    width: 70%;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    color:cyan;
+  }
+  
+  .footer .btn {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: Magenta;
+    background-color: cyan;
+  }
+  
+  .credit {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+
+

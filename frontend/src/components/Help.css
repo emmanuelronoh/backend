@@ -1,0 +1,104 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Help container styles */
+.help-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode styles */
+.light-mode {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.light-mode h1, .light-mode h2, .light-mode h3 {
+    color: #2c3e50;
+}
+
+.light-mode a {
+    color: #3498db;
+}
+
+.light-mode a:hover {
+    text-decoration: underline;
+}
+
+/* Dark mode styles */
+.dark-mode {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+.dark-mode h1, .dark-mode h2, .dark-mode h3 {
+    color: #ecf0f1;
+}
+
+.dark-mode a {
+    color: #1abc9c;
+}
+
+.dark-mode a:hover {
+    text-decoration: underline;
+}
+
+/* Help section styles */
+.help-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* Light mode section background */
+.light-mode .help-section {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+}
+
+/* Dark mode section background */
+.dark-mode .help-section {
+    background-color: #34495e;
+    border: 1px solid #3b5998;
+}
+
+/* List styles */
+ol, ul {
+    margin: 10px 0 20px 20px;
+}
+
+/* FAQ styles */
+.faq h3 {
+    margin-top: 10px;
+    color: #1abc9c; /* Change FAQ question color */
+}
+
+.faq p {
+    margin-bottom: 15px;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .help-container {
+        padding: 10px;
+    }
+
+    .help-section {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h2 {
+        font-size: 1.25em;
+    }
+}

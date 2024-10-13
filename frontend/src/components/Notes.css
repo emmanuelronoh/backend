@@ -1,0 +1,134 @@
+
+.notes {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #333;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.notes h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #007bff;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.button-group button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-group button:hover {
+    background-color: #0056b3;
+}
+
+.search-bar {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.search-bar input {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.notes-list {
+    margin-bottom: 2rem;
+}
+
+.note-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.note-item h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.note-item p {
+    margin: 5px 0;
+}
+
+.note-buttons {
+    margin-top: 10px;
+}
+
+.note-buttons button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.note-buttons .edit {
+    background-color: #28a745;
+}
+
+.note-buttons .edit:hover {
+    background-color: #218838;
+}
+
+.note-buttons .delete {
+    background-color: #dc3545;
+}
+
+.note-buttons .delete:hover {
+    background-color: #c82333;
+}
+
+.notes-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.notes-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.notes-form input,
+.notes-form textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.notes-form button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.notes-form button:hover {
+    background-color: #0056b3;
+}
