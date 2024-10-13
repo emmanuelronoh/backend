@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
-# Initialize schemas
+
 user_schema = UserSchema()
 note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)
