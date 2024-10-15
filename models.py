@@ -30,8 +30,10 @@ class Note(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    content=db.Column(db.String(255), nullable=False)
+    tags = db.Column(db.String(255), nullable=False)  
     date_created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('notes', lazy=True))
 

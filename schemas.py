@@ -15,9 +15,9 @@ class UserSchema(Schema):
 class NoteSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str(required=True, validate=validate.Length(min=1, max=100))
-    content = fields.Str(required=True, validate=validate.Length(min=1))
-    user_id = fields.Int(dump_only=True)
+    content = fields.Str(required=True, validate=validate.Length(min=1))   
     tags = fields.List(fields.Str(), missing=[])
+    user_id = fields.Int(dump_only=True)
 
     @post_load
     def create_note(self, data, **kwargs):

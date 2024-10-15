@@ -120,7 +120,7 @@ class NoteResource(Resource):
         return respond_with_error('Note not found or forbidden', 404)
 
     @cross_origin()
-    def put(self, note_id):
+    def patch(self, note_id):
         user = get_current_user()
         if not user:
             return respond_with_error('Unauthorized', 401)
@@ -153,6 +153,17 @@ class NoteResource(Resource):
             db.session.commit()
             return {}, 204
         return respond_with_error('Note not found or forbidden', 404)
+class NoteByTitle(Resource):
+    @cross_origin()
+    def get(self, title):
+        """Get a note by title."""
+        user=get_current_user()
+        if not user:
+            return respond_with_error('Unauthorized', 401)
+        note =Note.query.filter_by(title)
+        if note and note.user_id == user.id:
+            return note_schema.dump(note), 200
+        return respond_with_error('Note not found or forbidden', 404)
 
 class Contact(Resource):
     @cross_origin()
@@ -184,6 +195,7 @@ api.add_resource(Logout, '/logout')
 api.add_resource(CheckSession, '/check_session')
 api.add_resource(Notes, '/notes')
 api.add_resource(NoteResource, '/notes/<int:note_id>')
+api.add_resource(NoteByTitle, '/notes/title/<string:title>')  
 api.add_resource(Contact, '/contact')
 
 @api_bp.errorhandler(Exception)
