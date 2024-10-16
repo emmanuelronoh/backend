@@ -1,1 +1,7 @@
 .env
+requirments.txt
+pipfile
+pipfile.lock
+migration.env.py
+README.md
+__pycache__
