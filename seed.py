@@ -10,8 +10,8 @@ def seed_db():
     db.session.add(user2)
     db.session.commit()
 
-    note1 = Note(title='First Note', user_id=user1.id)
-    note2 = Note(title='Second Note', user_id=user2.id)
+    note1 = Note(title='First Note', content='hey this is my first content', tags='tag1,tag2', user_id=user1.id)
+    note2 = Note(title='Second Note', content='hey this is my first content', tags='tag1,tag2', user_id=user2.id)
 
     db.session.add(note1)
     db.session.add(note2)
