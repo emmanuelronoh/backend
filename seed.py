@@ -37,5 +37,5 @@ def seed_db():
 if __name__ == '__main__':
     app = create_app()
     with app.app_context():
-        db.create_all()  # Ensure tables are created
+        db.create_all()  
         seed_db()

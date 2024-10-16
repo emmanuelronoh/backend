@@ -42,7 +42,7 @@ class Signup(Resource):
         return user_schema.dump(new_user), 201
 
 class Login(Resource):
-    @cross_origin()
+    @cross_origin() # Allow CORS for this endpoint
     def post(self):
         data = request.get_json()
         if not data or 'username' not in data or 'password' not in data:
