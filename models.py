@@ -52,7 +52,7 @@ class EditorContent(db.Model):
         return f"<EditorContent for Note ID {self.note_id}>"
 
 class ContactMessage(db.Model):
-    __tablename__ = 'contact_messages'
+    __tablename__ = 'contact_us'
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
