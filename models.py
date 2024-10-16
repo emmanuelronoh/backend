@@ -8,7 +8,7 @@ class User(db.Model):
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
     _password_hash = db.Column(db.String(128), nullable=False)
 
     @property
@@ -30,8 +30,8 @@ class Note(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
-    content=db.Column(db.String(255), nullable=False)
-    tags = db.Column(db.String(255), nullable=False)  
+    content = db.Column(db.Text, nullable=False)  # Changed to Text for larger content
+    tags = db.Column(db.String(255))  # Made nullable if tags are optional
     date_created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 

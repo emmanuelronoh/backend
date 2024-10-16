@@ -29,32 +29,41 @@ class Signup(Resource):
     @cross_origin()
     def post(self):
         data = request.get_json()
-        if not data or 'username' not in data or 'password' not in data:
-            return respond_with_error('Username and password required', 400)
+        if not data or 'email' not in data or 'password' not in data:
+            return respond_with_error('Email and password required', 400)
 
-        if User.query.filter_by(username=data['username']).first():
-            return respond_with_error('Username already exists', 400)
+        if User.query.filter_by(email=data['email']).first():
+            return respond_with_error('User already exists', 400)
 
-        new_user = User(username=data['username'])
-        new_user.password = data['password']
+        new_user = User(email=data['email'])
+        new_user.password = data['password']  # Ensure to hash passwords in production
         db.session.add(new_user)
         db.session.commit()
         return user_schema.dump(new_user), 201
 
+    @cross_origin()
+    def get(self):
+        users = User.query.all()
+        return user_schema.dump(users, many=True), 200
+
 class Login(Resource):
-    @cross_origin() # Allow CORS for this endpoint
+    @cross_origin()
     def post(self):
         data = request.get_json()
-        if not data or 'username' not in data or 'password' not in data:
-            return respond_with_error('Username and password required', 400)
+        if not data or 'email' not in data or 'password' not in data:
+            return respond_with_error('Email and password required', 400)
 
-        user = User.query.filter_by(username=data['username']).first()
+        user = User.query.filter_by(email=data['email']).first()
         if not user:
             return respond_with_error('User not found', 404)
 
         if user.check_password(data['password']):
             session['user_id'] = user.id
-            return user_schema.dump(user), 200
+            return {
+                "message": "Login successful",
+                "user": user_schema.dump(user)
+            }, 200
+
         return respond_with_error('Invalid password', 401)
 
 class Logout(Resource):
@@ -96,12 +105,7 @@ class Notes(Resource):
 
         try:
             db.session.commit()
-            return {
-                "id": new_note.id,
-                "title": new_note.title,
-                "content": new_note.content,
-                "user_id": new_note.user_id
-            }, 201
+            return note_schema.dump(new_note), 201
         except Exception as e:
             db.session.rollback()
             logging.error(f'Error creating note: {e}')
@@ -131,7 +135,7 @@ class NoteResource(Resource):
 
         data = request.get_json()
         note.title = data.get('title', note.title)
-        note.content = data.get('content', note.content)  # Update content as well
+        note.content = data.get('content', note.content)
 
         try:
             db.session.commit()
@@ -153,15 +157,16 @@ class NoteResource(Resource):
             db.session.commit()
             return {}, 204
         return respond_with_error('Note not found or forbidden', 404)
+
 class NoteByTitle(Resource):
     @cross_origin()
     def get(self, title):
-        """Get a note by title."""
-        user=get_current_user()
+        user = get_current_user()
         if not user:
             return respond_with_error('Unauthorized', 401)
-        note =Note.query.filter_by(title)
-        if note and note.user_id == user.id:
+
+        note = Note.query.filter_by(title=title, user_id=user.id).first()  # Adjust query
+        if note:
             return note_schema.dump(note), 200
         return respond_with_error('Note not found or forbidden', 404)
 
@@ -189,6 +194,12 @@ class Contact(Resource):
             logging.error(f'Error saving contact message: {e}')
             return respond_with_error('Failed to send message', 500)
 
+class Users(Resource):
+    @cross_origin()
+    def get(self):
+        users = User.query.all()  
+        return user_schema.dump(users, many=True), 200  
+
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
@@ -197,6 +208,7 @@ api.add_resource(Notes, '/notes')
 api.add_resource(NoteResource, '/notes/<int:note_id>')
 api.add_resource(NoteByTitle, '/notes/title/<string:title>')  
 api.add_resource(Contact, '/contact')
+api.add_resource(Users, '/users')  
 
 @api_bp.errorhandler(Exception)
 def handle_exception(e):
