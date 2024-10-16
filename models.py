@@ -31,7 +31,6 @@ class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    tags = db.Column(db.ARRAY(db.String), nullable=True)  
     date_created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     user = db.relationship('User', backref=db.backref('notes', lazy=True))
@@ -45,8 +44,6 @@ class EditorContent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     note_id = db.Column(db.Integer, db.ForeignKey('notes.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)  
-    images = db.Column(db.ARRAY(db.String), nullable=True)
-    videos = db.Column(db.ARRAY(db.String), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     note = db.relationship('Note', backref=db.backref('editor_contents', lazy=True))
@@ -54,7 +51,6 @@ class EditorContent(db.Model):
     def __repr__(self):
         return f"<EditorContent for Note ID {self.note_id}>"
 
-# New model for contact messages
 class ContactMessage(db.Model):
     __tablename__ = 'contact_messages'
     
