@@ -1,84 +1,63 @@
 from flask import Flask, Blueprint, request, session, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
+from flask_restful import Resource
+from flask import request
 from flask_mail import Mail, Message
 from models import db, User, Note, ContactMessage
 from schemas import UserSchema, NoteSchema, ContactMessageSchema
-from werkzeug.security import generate_password_hash, check_password_hash
+import logging
 
+# Create Flask app
 app = Flask(__name__)
 CORS(app)
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-
-import logging
-from flask_cors import cross_origin
-mail = Mail(app)
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-
 # Create a Blueprint
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
+# Initialize schemas
 user_schema = UserSchema()
 note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)
 contact_message_schema = ContactMessageSchema()
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
 def respond_with_error(message, status_code):
-    response = {'error': message}
-    return jsonify(response), status_code
+    response = {'error': message, 'status': status_code}
+    return jsonify(response)
 
 def get_current_user():
     user_id = session.get('user_id')
     return User.query.get(user_id) if user_id else None
 
 class Signup(Resource):
-    @cross_origin()
     def post(self):
         data = request.get_json()
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
-        # Check if user already exists
         if User.query.filter_by(email=data['email']).first():
             return respond_with_error('User already exists', 400)
 
-        # Create new user with hashed password
         new_user = User(email=data['email'])
-        new_user.password = generate_password_hash(data['password'])  # Hash the password
+        new_user.password = data['password']  # Password should be hashed in the User model
         db.session.add(new_user)
         db.session.commit()
         
         return user_schema.dump(new_user), 201
 
-    @cross_origin()
-    def get(self):
-        users = User.query.all()
-        return user_schema.dump(users, many=True), 200
-
-
 class Login(Resource):
-    @cross_origin()
     def post(self):
         data = request.get_json()
-        
-        # Check if the required data is provided
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
-        # Fetch the user by email
         user = User.query.filter_by(email=data['email']).first()
-        
-        # Check if user exists
         if not user:
             return respond_with_error('User not found', 404)
 
-        # Use the custom check_password method to verify the password
         if user.check_password(data['password']):
             session['user_id'] = user.id
             return {
@@ -87,42 +66,14 @@ class Login(Resource):
             }, 200
 
         return respond_with_error('Invalid password', 401)
-class ForgotPassword(Resource):
-    def post(self):
-        data = request.get_json()
-        logging.info(f'Received forgot password request: {data}')
 
-        if not data or 'email' not in data:
-            logging.warning('Email required for password reset')
-            return {"error": "Email required"}, 400
-
-        user = User.query.filter_by(email=data['email']).first()
-        if not user:
-            logging.warning('User not found for password reset')
-            return {"error": "User not found"}, 404
-
-        # Generate a reset token (placeholder for real implementation)
-        reset_token = "placeholder_for_reset_token"  # You should implement actual token generation
-        reset_link = f'http://localhost:5000/reset-password/{reset_token}'  # Create your reset link
-
-        msg = Message('Password Reset Request', sender='your_email@gmail.com', recipients=[data['email']])
-        msg.body = f'Please use the following link to reset your password: {reset_link}'
-        try:
-            mail.send(msg)
-            logging.info(f'Password reset link sent to {data["email"]}')
-            return {"message": "Password reset link sent"}, 200
-        except Exception as e:
-            logging.error(f'Error sending email: {e}')
-            return {"error": "Failed to send password reset link"}, 500
 
 class Logout(Resource):
-    @cross_origin()
     def delete(self):
         session.pop('user_id', None)
         return {}, 204
 
 class CheckSession(Resource):
-    @cross_origin()
     def get(self):
         user = get_current_user()
         if user:
@@ -130,7 +81,6 @@ class CheckSession(Resource):
         return respond_with_error('Unauthorized', 401)
 
 class Notes(Resource):
-    @cross_origin()
     def get(self):
         user = get_current_user()
         if not user:
@@ -139,7 +89,6 @@ class Notes(Resource):
         notes = Note.query.filter_by(user_id=user.id).all()
         return notes_schema.dump(notes), 200
 
-    @cross_origin()
     def post(self):
         user = get_current_user()
         if not user:
@@ -149,7 +98,12 @@ class Notes(Resource):
         if not data or 'title' not in data or 'content' not in data:
             return respond_with_error('Title and content required', 400)
 
-        new_note = Note(title=data['title'], content=data['content'], user_id=user.id)
+        new_note = Note(
+            title=data['title'],
+            content=data['content'],
+            user_id=user.id
+        )
+
         db.session.add(new_note)
 
         try:
@@ -161,7 +115,6 @@ class Notes(Resource):
             return respond_with_error('Failed to create note', 500)
 
 class NoteResource(Resource):
-    @cross_origin()
     def get(self, note_id):
         user = get_current_user()
         if not user:
@@ -172,7 +125,6 @@ class NoteResource(Resource):
             return note_schema.dump(note), 200
         return respond_with_error('Note not found or forbidden', 404)
 
-    @cross_origin()
     def patch(self, note_id):
         user = get_current_user()
         if not user:
@@ -183,8 +135,10 @@ class NoteResource(Resource):
             return respond_with_error('Note not found or forbidden', 404)
 
         data = request.get_json()
-        note.title = data.get('title', note.title)
-        note.content = data.get('content', note.content)
+        if 'title' in data:
+            note.title = data['title']
+        if 'content' in data:
+            note.content = data['content']
 
         try:
             db.session.commit()
@@ -194,7 +148,6 @@ class NoteResource(Resource):
             logging.error(f'Error updating note: {e}')
             return respond_with_error('Failed to update note', 500)
 
-    @cross_origin()
     def delete(self, note_id):
         user = get_current_user()
         if not user:
@@ -208,19 +161,60 @@ class NoteResource(Resource):
         return respond_with_error('Note not found or forbidden', 404)
 
 class NoteByTitle(Resource):
-    @cross_origin()
     def get(self, title):
         user = get_current_user()
         if not user:
             return respond_with_error('Unauthorized', 401)
 
-        note = Note.query.filter_by(title=title, user_id=user.id).first()  # Adjust query
+        note = Note.query.filter_by(title=title, user_id=user.id).first()
         if note:
             return note_schema.dump(note), 200
         return respond_with_error('Note not found or forbidden', 404)
+class EditorContentResource(Resource):
+    def post(self):
+        data = request.get_json()
+        note_id = data.get('note_id')
+        content = data.get('content')
+
+        if not note_id or not content:
+            return {'error': 'note_id and content are required'}, 400
+
+        # Add your database logic here
+        # new_content = EditorContent(note_id=note_id, content=content)
+        # db.session.add(new_content)
+        # db.session.commit()
+
+        return {'message': 'Content created successfully'}, 201
+
+    def get(self):
+        # Fetch all editor content
+        # content_list = EditorContent.query.all()  # Example
+        return {'message': 'Fetched all content'}, 200
+
+class EditorContentByNote(Resource):
+    def get(self, note_id):
+        # Fetch content by note_id
+        # content = EditorContent.query.filter_by(note_id=note_id).all()
+        return {'message': f'Fetched content for note {note_id}'}, 200
+
+class EditorContentResourceById(Resource):
+    def put(self, content_id):
+        data = request.get_json()
+        # Update content by ID
+        # content = EditorContent.query.get(content_id)
+        # Update content fields...
+        
+        return {'message': 'Content updated successfully'}, 200
+
+    def delete(self, content_id):
+        # Delete content by ID
+        # content = EditorContent.query.get(content_id)
+        # db.session.delete(content)
+        # db.session.commit()
+        
+        return {'message': 'Content deleted successfully'}, 200
 
 class Contact(Resource):
-    @cross_origin()
     def post(self):
         data = request.get_json()
         if not data or 'name' not in data or 'email' not in data or 'subject' not in data or 'message' not in data:
@@ -244,23 +238,32 @@ class Contact(Resource):
             return respond_with_error('Failed to send message', 500)
 
 class Users(Resource):
-    @cross_origin()
     def get(self):
         users = User.query.all()  
         return user_schema.dump(users, many=True), 200  
-
-api.add_resource(Signup, '/signup')
-api.add_resource(Login, '/login')
-api.add_resource(ForgotPassword, '/api/forgot-password')
-api.add_resource(Logout, '/logout')
-api.add_resource(CheckSession, '/check_session')
-api.add_resource(Notes, '/notes')
-api.add_resource(NoteResource, '/notes/<int:note_id>')
-api.add_resource(NoteByTitle, '/notes/title/<string:title>')  
-api.add_resource(Contact, '/contact')
-api.add_resource(Users, '/users')  
 
 @api_bp.errorhandler(Exception)
 def handle_exception(e):
     logging.error(f'Unhandled exception: {str(e)}')
     return respond_with_error('Internal Server Error', 500)
+
+# Add resources to the API
+api.add_resource(Signup, '/signup')
+api.add_resource(Login, '/login')
+api.add_resource(Logout, '/logout')
+api.add_resource(CheckSession, '/check_session')
+api.add_resource(Notes, '/notes')
+api.add_resource(NoteResource, '/notes/<int:note_id>')
+api.add_resource(NoteByTitle, '/notes/title/<string:title>') 
+api.add_resource(EditorContentResource, '/editor_content')
+api.add_resource(EditorContentByNote, '/editor_content/note/<int:note_id>')
+api.add_resource(EditorContentResourceById, '/editor_content/<int:content_id>') 
+api.add_resource(Contact, '/contact')
+api.add_resource(Users, '/users')  
+
+# Register the blueprint with the app
+app.register_blueprint(api_bp, url_prefix='/api')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+

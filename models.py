@@ -26,7 +26,7 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User email={self.email}>"
-    
+
 class Note(db.Model):
     __tablename__ = 'notes'
     
@@ -67,22 +67,3 @@ class ContactMessage(db.Model):
 
     def __repr__(self):
         return f"<ContactMessage from={self.name}, subject={self.subject}>"
-
-# Example Marshmallow Schemas for Validation
-class UserSchema(Schema):
-    id = fields.Int(dump_only=True)
-    email = fields.Str(required=True, validate=validate.Email())
-    password = fields.Str(required=True, load_only=True)
-
-class NoteSchema(Schema):
-    id = fields.Int(dump_only=True)
-    title = fields.Str(required=True)
-    content = fields.Str(required=True)
-    tags = fields.Str(allow_none=True)
-
-class ContactMessageSchema(Schema):
-    id = fields.Int(dump_only=True)
-    name = fields.Str(required=True)
-    email = fields.Str(required=True, validate=validate.Email())
-    subject = fields.Str(required=True)
-    message = fields.Str(required=True)
