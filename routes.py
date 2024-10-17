@@ -1,9 +1,21 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Flask, Blueprint, request, session, jsonify
 from flask_restful import Api, Resource
+from flask_cors import CORS
+from flask_mail import Mail, Message
 from models import db, User, Note, ContactMessage
 from schemas import UserSchema, NoteSchema, ContactMessageSchema
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+CORS(app)
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+
 import logging
 from flask_cors import cross_origin
+mail = Mail(app)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -32,19 +44,23 @@ class Signup(Resource):
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
+        # Check if user already exists
         if User.query.filter_by(email=data['email']).first():
             return respond_with_error('User already exists', 400)
 
+        # Create new user with hashed password
         new_user = User(email=data['email'])
-        new_user.password = data['password']  # Ensure to hash passwords in production
+        new_user.password = generate_password_hash(data['password'])  # Hash the password
         db.session.add(new_user)
         db.session.commit()
+        
         return user_schema.dump(new_user), 201
 
     @cross_origin()
     def get(self):
         users = User.query.all()
         return user_schema.dump(users, many=True), 200
+
 
 class Login(Resource):
     @cross_origin()
@@ -57,14 +73,43 @@ class Login(Resource):
         if not user:
             return respond_with_error('User not found', 404)
 
-        if user.check_password(data['password']):
+        # Check the password using the method from the User model
+        if check_password_hash(user.password, data['password']):  # Verify the password
             session['user_id'] = user.id
             return {
                 "message": "Login successful",
-                "user": user_schema.dump(user)
+                "user": {"id": user.id, "email": user.email}
             }, 200
 
         return respond_with_error('Invalid password', 401)
+
+class ForgotPassword(Resource):
+    def post(self):
+        data = request.get_json()
+        logging.info(f'Received forgot password request: {data}')
+
+        if not data or 'email' not in data:
+            logging.warning('Email required for password reset')
+            return {"error": "Email required"}, 400
+
+        user = User.query.filter_by(email=data['email']).first()
+        if not user:
+            logging.warning('User not found for password reset')
+            return {"error": "User not found"}, 404
+
+        # Generate a reset token (placeholder for real implementation)
+        reset_token = "placeholder_for_reset_token"  # You should implement actual token generation
+        reset_link = f'http://localhost:5000/reset-password/{reset_token}'  # Create your reset link
+
+        msg = Message('Password Reset Request', sender='your_email@gmail.com', recipients=[data['email']])
+        msg.body = f'Please use the following link to reset your password: {reset_link}'
+        try:
+            mail.send(msg)
+            logging.info(f'Password reset link sent to {data["email"]}')
+            return {"message": "Password reset link sent"}, 200
+        except Exception as e:
+            logging.error(f'Error sending email: {e}')
+            return {"error": "Failed to send password reset link"}, 500
 
 class Logout(Resource):
     @cross_origin()
@@ -202,6 +247,7 @@ class Users(Resource):
 
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
+api.add_resource(ForgotPassword, '/api/forgot-password')
 api.add_resource(Logout, '/logout')
 api.add_resource(CheckSession, '/check_session')
 api.add_resource(Notes, '/notes')
