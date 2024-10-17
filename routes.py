@@ -66,15 +66,20 @@ class Login(Resource):
     @cross_origin()
     def post(self):
         data = request.get_json()
+        
+        # Check if the required data is provided
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
+        # Fetch the user by email
         user = User.query.filter_by(email=data['email']).first()
+        
+        # Check if user exists
         if not user:
             return respond_with_error('User not found', 404)
 
-        # Check the password using the method from the User model
-        if check_password_hash(user.password, data['password']):  # Verify the password
+        # Use the custom check_password method to verify the password
+        if user.check_password(data['password']):
             session['user_id'] = user.id
             return {
                 "message": "Login successful",
@@ -82,7 +87,6 @@ class Login(Resource):
             }, 200
 
         return respond_with_error('Invalid password', 401)
-
 class ForgotPassword(Resource):
     def post(self):
         data = request.get_json()
